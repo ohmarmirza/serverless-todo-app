@@ -27,6 +27,7 @@ provider:
     TODOS_CREATED_AT_INDEX: CreatedAtIndex
     ATTACHMENT_S3_BUCKET: serverless-c4-todo-images-${self:provider.stage}
     SIGNED_URL_EXPIRATION: 300
+    AUTH_0_JWKS_URL: https://dev-x92on9zg.us.auth0.com/.well-known/jwks.json
 
   logs:
     # Enable API Gateway logs
