@@ -1,7 +1,9 @@
 import * as uuid from 'uuid'
 import { TodosAccess } from "../dataLayer/todosAccess";
 import { TodoItem } from "../models/TodoItem";
+import { TodoUpdate } from '../models/TodoUpdate';
 import { CreateTodoRequest } from "../requests/CreateTodoRequest";
+import { UpdateTodoRequest } from '../requests/UpdateTodoRequest';
 import { createLogger } from "../utils/logger";
 
 const todosAccess = new TodosAccess()
@@ -13,7 +15,7 @@ export async function getTodosForUser(userId: string): Promise<TodoItem[]> {
     return await todosAccess.getTodosForUser(userId)
 }
 
-export async function createTodo(request: CreateTodoRequest, userId: string): Promise<TodoItem> {
+export async function createTodo(userId: string, request: CreateTodoRequest): Promise<TodoItem> {
 
     const todoId = uuid.v4()
 
@@ -27,7 +29,19 @@ export async function createTodo(request: CreateTodoRequest, userId: string): Pr
         attachmentUrl: `https://${bucketName}.s3.amazonaws.com/${todoId}`
     }
 
-    logger.info(`Todos - Creating todo ${todoId} for user ${userId}`, { todoItem })
+    logger.info(`Todos - Creating todo ${todoId} for user ${userId}`, { todoItem: todoItem })
 
     return await todosAccess.createTodo(todoItem)
-} 
+}
+export async function updateTodo(todoId: string, userId: string, request: UpdateTodoRequest) {
+
+    const todoUpdate: TodoUpdate = {
+        name: request.name,
+        dueDate: request.dueDate,
+        done: request.done
+    }
+
+    logger.info(`Todos - Updating todo ${todoId} for user ${userId}`, { todoUpdate: todoUpdate })
+
+    await todosAccess.updateTodo(todoId, userId, todoUpdate)
+}
