@@ -8,7 +8,7 @@ plugins:
   - serverless-iam-roles-per-function
   - serverless-plugin-tracing
   - serverless-reqvalidator-plugin
-  
+  - serverless-aws-documentation
 provider:
   name: aws
   runtime: nodejs12.x
@@ -43,6 +43,20 @@ provider:
             - xray:PutTraceSegments
           Resource: "*"
 
+custom:
+  documentation:
+    api:
+      info:
+        version: v1.0.0
+        title: TODO API
+        description: Serverless TODO application
+    models:
+      - name: CreateTodoRequest
+        contentType: application/json
+        schema: ${file(models/create-todo-model.json)}
+      - name: UpdateTodoRequest
+        contentType: application/json
+        schema: ${file(models/update-todo-model.json)}
 
 functions:
 
@@ -72,9 +86,11 @@ functions:
           cors: true
           authorizer: Auth
           reqValidatorName: RequestBodyValidator
-          request:
-            schemas:
-              application/json: ${file(models/create-todo-model.json)}
+          documentation:
+            summary: Create a new todo
+            description: Create a new todo
+            requestModels:
+              'application/json': UpdateTodoRequest
     iamRoleStatements:
        - Effect: Allow
          Action:
@@ -90,9 +106,11 @@ functions:
           cors: true
           authorizer: Auth
           reqValidatorName: RequestBodyValidator
-          request:
-            schemas:
-              application/json: ${file(models/update-todo-model.json)}
+          documentation:
+            summary: Update a todo
+            description: Update a todo
+            requestModels:
+              'application/json': CreateTodoRequest
     iamRoleStatements:
        - Effect: Allow
          Action:
