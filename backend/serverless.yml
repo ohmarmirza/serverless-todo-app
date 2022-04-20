@@ -1,5 +1,5 @@
 # TODO: Change the name of the org 
-org: sudkul
+org: ohmarmirza
 app: serverless-todo-app
 service: serverless-todo-app
 
@@ -145,31 +145,31 @@ resources:
           Ref: ApiGatewayRestApi
     
     TodosTable:
-    Type: AWS::DynamoDB::Table
-    Properties:
-      AttributeDefinitions:
-        - AttributeName: userId
-          AttributeType: S
-        - AttributeName: todoId
-          AttributeType: S
-        - AttributeName: createdAt
-          AttributeType: S
-      KeySchema:
-        - AttributeName: userId
-          KeyType: HASH
-        - AttributeName: todoId
-          KeyType: RANGE
-      BillingMode: PAY_PER_REQUEST
-      TableName: ${self:provider.environment.TODOS_TABLE}
-      LocalSecondaryIndexes:
-        - IndexName: ${self:provider.environment.TODOS_CREATED_AT_INDEX}
-          KeySchema:
-            - AttributeName: userId
-              KeyType: HASH
-            - AttributeName: createdAt
-              KeyType: RANGE
-          Projection:
-            ProjectionType: ALL # What attributes will be copied to an index
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: userId
+            AttributeType: S
+          - AttributeName: todoId
+            AttributeType: S
+          - AttributeName: createdAt
+            AttributeType: S
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+          - AttributeName: todoId
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:provider.environment.TODOS_TABLE}
+        LocalSecondaryIndexes:
+          - IndexName: ${self:provider.environment.TODOS_CREATED_AT_INDEX}
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+              - AttributeName: createdAt
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL # What attributes will be copied to an index
 
     AttachmentsBucket:
       Type: AWS::S3::Bucket

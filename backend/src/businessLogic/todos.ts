@@ -51,7 +51,7 @@ export async function deleteTodo(todoId: string, userId: string) {
 
     await todosAccess.deleteTodo(todoId, userId)
 }
-export async function createAttachmentPresignedUrl(todoId: string, userId: string): string {
+export async function createAttachmentPresignedUrl(todoId: string, userId: string): Promise<string> {
     logger.info(`Todos - Creating Attachment PresignedUrl for todo ${todoId} for user ${userId}`)
 
     const todoExists = await todosAccess.getTodo(todoId, userId);
