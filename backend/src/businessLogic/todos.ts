@@ -45,3 +45,9 @@ export async function updateTodo(todoId: string, userId: string, request: Update
 
     await todosAccess.updateTodo(todoId, userId, todoUpdate)
 }
+
+export async function deleteTodo(todoId: string, userId: string) {
+    logger.info(`Todos - Deleting todo ${todoId} for user ${userId}`)
+
+    await todosAccess.deleteTodo(todoId, userId)
+}
