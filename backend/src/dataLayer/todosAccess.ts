@@ -16,7 +16,7 @@ export class TodosAccess {
         private readonly s3Client: Types = new XAWS.S3({ signatureVersion: 'v4' }),
         private readonly todosTable = process.env.TODOS_TABLE,
         private readonly s3BucketName = process.env.BUCKET_NAME,
-        private readonly urlExpiration = process.env.SIGNED_URL_EXPIRATION) {
+        private readonly urlExpiration = process.env.SIGNED_URL_EXPIRATION || 3000) {
     }
 
     async getTodosForUser(userId: string): Promise<TodoItem[]> {
@@ -107,7 +107,7 @@ export class TodosAccess {
         return this.s3Client.getSignedUrl('putObject', {
             Bucket: this.s3BucketName,
             Key: todoId,
-            Expires: this.urlExpiration
+            Expires: Number(this.urlExpiration)
         })
 
     }

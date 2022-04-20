@@ -15,12 +15,12 @@ export const handler = middy(
 
     const newTodo: CreateTodoRequest = JSON.parse(event.body)
     const userId = getUserId(event)
-    const newTodoCreated = await createTodo(userId, newTodo)
+    const item = await createTodo(userId, newTodo)
 
     return {
       statusCode: 201,
       body: JSON.stringify({
-        newTodoCreated
+        item
       })
     }
   }
