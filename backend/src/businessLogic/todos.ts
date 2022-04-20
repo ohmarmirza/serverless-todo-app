@@ -51,3 +51,14 @@ export async function deleteTodo(todoId: string, userId: string) {
 
     await todosAccess.deleteTodo(todoId, userId)
 }
+export async function createAttachmentPresignedUrl(todoId: string, userId: string): string {
+    logger.info(`Todos - Creating Attachment PresignedUrl for todo ${todoId} for user ${userId}`)
+
+    const todoExists = await todosAccess.getTodo(todoId, userId);
+
+    if (!todoExists) {
+        throw new Error(`todo ${todoId} for user ${userId} does not exist`)
+    }
+
+    return todosAccess.createAttachmentPresignedUrl(todoId)
+}

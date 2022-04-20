@@ -4,6 +4,7 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 import { createLogger } from '../utils/logger'
 import { TodoItem } from "../models/TodoItem"
 import { TodoUpdate } from '../models/TodoUpdate'
+import { Types } from 'aws-sdk/clients/s3'
 
 const XAWS = AWSXRay.captureAWS(AWS)
 const logger = createLogger('todosAccess')
@@ -12,7 +13,10 @@ export class TodosAccess {
 
     constructor(
         private readonly docClient: DocumentClient = new XAWS.DynamoDB.DocumentClient(),
-        private readonly todosTable = process.env.TODOS_TABLE) {
+        private readonly s3Client: Types = new XAWS.S3({ signatureVersion: 'v4' }),
+        private readonly todosTable = process.env.TODOS_TABLE,
+        private readonly s3BucketName = process.env.BUCKET_NAME,
+        private readonly urlExpiration = process.env.SIGNED_URL_EXPIRATION) {
     }
 
     async getTodosForUser(userId: string): Promise<TodoItem[]> {
@@ -28,6 +32,20 @@ export class TodosAccess {
 
         const items = result.Items
         return items as TodoItem[]
+    }
+
+    async getTodo(todoId: string, userId: string): Promise<Boolean> {
+        logger.info(`TodosAccess - Getting todo ${todoId} for user ${userId}`)
+
+        const result = await this.docClient.get({
+            TableName: this.todosTable,
+            Key: {
+                "userId": userId,
+                "todoId": todoId
+            }
+        }).promise()
+
+        return !!result.Item
     }
 
     async createTodo(todoItem: TodoItem): Promise<TodoItem> {
@@ -80,6 +98,17 @@ export class TodosAccess {
             },
         }).promise()
 
-        logger.info(`TodosAccess - Result of updating todo ${todoId} for user ${userId}`, result);
+        logger.info(`TodosAccess - Result of deleting todo ${todoId} for user ${userId}`, result)
+    }
+    createAttachmentPresignedUrl(todoId: string): string {
+
+        logger.info(`TodosAccess - Creating Attachment PresignedUrl for todo ${todoId}`)
+
+        return this.s3Client.getSignedUrl('putObject', {
+            Bucket: this.s3BucketName,
+            Key: todoId,
+            Expires: this.urlExpiration
+        })
+
     }
 }
